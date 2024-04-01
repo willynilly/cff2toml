@@ -106,7 +106,7 @@ def update_pyproject_toml_with_citation_cff(pyproject_toml_file_path=DEFAULT_PYP
         pyproject_toml_object['project']['version'] = citation_cff_object['version']
         pyproject_toml_object['project']['description'] = citation_cff_object['abstract']
         pyproject_toml_object['project']['license'] = citation_cff_object['license']
-        pyproject_toml_object['projec.urls']['Source'] = citation_cff_object['repository-code']
+        pyproject_toml_object['project']['urls']['Source'] = citation_cff_object['repository-code']
 
         return pyproject_toml_object
     return update_toml_with_cff(toml_file_path=pyproject_toml_file_path, cff_file_path=citation_cff_file_path, transform_toml_object_func=transformer)

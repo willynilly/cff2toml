@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: sometool
+title: somecooltool
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
@@ -14,9 +14,9 @@ authors:
       Some University
     orcid: "https://orcid.org/0000-0003-1822-6756"
 repository-code: >-
-  https://github.com/willynilly/somewhere
+  https://github.com/willynilly/somewherecool
 abstract: >-
-  A module that does something.
+  A module that does something cool.
 keywords:
   - keyword1
   - keyword2
