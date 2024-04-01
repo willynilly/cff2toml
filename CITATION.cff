@@ -12,11 +12,13 @@ authors:
 repository-code: >-
   https://github.com/willynilly/cff2toml
 abstract: >-
-  A module that updates TOML files, including 
-  pyproject.toml files, with metadata from 
-  a CITATION.cff file.
+  A module to synchronize metadata between TOML 
+  and CFF files, including between pyproject.toml 
+  and CITATION.cff files.
 keywords:
   - Citation File Format
   - TOML
+  - pyproject.toml
+  - CITATION.cff
 license: Apache-2.0
-version: "0.0.1"
+version: "1.0.0"

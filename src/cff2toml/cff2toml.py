@@ -87,7 +87,7 @@ def update_toml_with_cff(toml_file_path: str, cff_file_path: str, transform_toml
     return toml_object
 
 
-def update_cff_with_toml(toml_file_path: str, cff_file_path: str, transform_cff_object_func: TransformCFFObjectWithTOMLObjectFunction) -> CFFObject:
+def update_cff_with_toml(cff_file_path: str, toml_file_path: str, transform_cff_object_func: TransformCFFObjectWithTOMLObjectFunction) -> CFFObject:
 
     toml_object: TOMLObject = load_toml_object(toml_file_path=toml_file_path)
     cff_object: CFFObject = load_cff_object(cff_file_path=cff_file_path)
@@ -112,7 +112,7 @@ def update_pyproject_toml_with_citation_cff(pyproject_toml_file_path=DEFAULT_PYP
     return update_toml_with_cff(toml_file_path=pyproject_toml_file_path, cff_file_path=citation_cff_file_path, transform_toml_object_func=transformer)
 
 
-def update_citation_cff_with_pyproject_toml(pyproject_toml_file_path=DEFAULT_PYPROJECT_TOML_FILE_PATH, citation_cff_file_path=DEFAULT_CITATION_CFF_FILE_PATH) -> CFFObject:
+def update_citation_cff_with_pyproject_toml(citation_cff_file_path=DEFAULT_CITATION_CFF_FILE_PATH, pyproject_toml_file_path=DEFAULT_PYPROJECT_TOML_FILE_PATH) -> CFFObject:
     def transformer(citation_cff_object: CFFObject, pyproject_toml_object: TOMLObject) -> CFFObject:
         citation_cff_object['title'] = pyproject_toml_object['project']['name']
         citation_cff_object['version'] = pyproject_toml_object['project']['version']
