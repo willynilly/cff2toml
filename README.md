@@ -11,6 +11,8 @@ A module to synchronize metadata between TOML and CFF files, including between p
 
 - [Installation](#installation)
 - [Usage](#usage)
+- [Limitations](#limitations)
+- [Roadmap](#roadmap)
 - [License](#license)
 
 ## Installation
@@ -175,6 +177,15 @@ print(cff_object['somekey'])
 cff_object['somekey'] = 'somevalue'
 save_cff_object(cff_object=cff_object, cff_file_path=cff_file_path)
 ```
+
+## Limitatons
+
+For update_pyproject_toml_with_citation_cff() and update_citation_cff_with_pyproject_toml(), the only metadata that is currently updated between CITATION.cff and pyproject.toml files is: CFF (title, version, abstract, license, repository-code) <-> TOML (project.name, project.version, project.description, project.license, project.urls.Source).
+
+## Roadmap
+
+1. Update author information for update_pyproject_toml_with_citation_cff() and update_citation_cff_with_pyproject_toml()
+2. Create CLI
 
 ## License
 
