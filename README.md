@@ -34,6 +34,7 @@ update_pyproject_toml_with_citation_cff()
 
 ```python
 from cff2toml import update_pyproject_toml_with_citation_cff
+import os
 
 # update pyproject.toml with metadata
 # from CITATION.cff
@@ -57,6 +58,7 @@ update_citation_cff_with_pyproject_toml()
 
 ```python
 from cff2toml import update_pyproject_toml_with_citation_cff
+import os
 
 # update CITATION.cff with metadata
 # from pyprojects.cff
@@ -70,16 +72,17 @@ update_citation_cff_with_pyproject_toml(citation_cff_file_path=citation_cff_file
 ### Setting the same version for both the pyprojects.toml file and CITATION.cff file
 
 ```python
-from cff2toml import set_version_for_pyproject_toml_with_citation_cff
+from cff2toml import set_version_for_pyproject_toml_and_citation_cff
 
 # set same version for pyproject.toml
 # and CITATION.cff where both files are
 # located in the working directory
-set_version_for_pyproject_toml_with_citation_cff(version="2.0.0")
+set_version_for_pyproject_toml_and_citation_cff(version="2.0.0")
 ```
 
 ```python
 from cff2toml import update_pyproject_toml_with_citation_cff
+import os
 
 # set same version for pyproject.toml
 # and CITATION.cff where both files
