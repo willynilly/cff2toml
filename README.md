@@ -57,7 +57,7 @@ update_citation_cff_with_pyproject_toml()
 ```
 
 ```python
-from cff2toml import update_pyproject_toml_with_citation_cff
+from cff2toml import update_citation_cff_with_pyproject_toml
 import os
 
 # update CITATION.cff with metadata
@@ -81,7 +81,7 @@ set_version_for_pyproject_toml_and_citation_cff(version="2.0.0")
 ```
 
 ```python
-from cff2toml import update_pyproject_toml_with_citation_cff
+from cff2toml import set_version_for_pyproject_toml_and_citation_cff
 import os
 
 # set same version for pyproject.toml
@@ -139,7 +139,7 @@ print(toml_object['somekey'])
 ### Save TOML file object
 
 ```python
-from cff2toml import load_toml_object, TOMLObject
+from cff2toml import load_toml_object, save_toml_object, TOMLObject
 import os
 
 toml_file_path: str = os.path.join('somepath', 'some_toml_file.toml')
@@ -165,7 +165,7 @@ print(cff_object['somekey'])
 ### Save CFF file object
 
 ```python
-from cff2toml import load_cff_object, CFFObject
+from cff2toml import load_cff_object, save_cff_object, CFFObject
 import os
 
 cff_file_path: str = os.path.join('somepath', 'some_cff_file.cff')
