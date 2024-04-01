@@ -185,7 +185,8 @@ For update_pyproject_toml_with_citation_cff() and update_citation_cff_with_pypro
 ## Roadmap
 
 1. Update author information for update_pyproject_toml_with_citation_cff() and update_citation_cff_with_pyproject_toml()
-2. Create CLI
+2. Add get_versions_for_pyproject_toml_and_citation_cff() method that returns the current versions of both files as a tuple.
+3. Create CLI
 
 ## License
 
