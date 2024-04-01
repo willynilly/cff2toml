@@ -26,8 +26,8 @@ pip install cff2toml
 ```python
 from cff2toml import update_pyproject_toml_with_citation_cff
 
-# update the pyproject.toml file with metadata
-# from CITATION.cff file
+# update pyproject.toml with metadata
+# from CITATION.cff
 # where both files are located in the working directory
 update_pyproject_toml_with_citation_cff()
 ```
@@ -35,22 +35,22 @@ update_pyproject_toml_with_citation_cff()
 ```python
 from cff2toml import update_pyproject_toml_with_citation_cff
 
-# update the pyproject.toml file with metadata
-# from CITATION.cff file
-# where both files are located in the working directory
+# update pyproject.toml with metadata
+# from CITATION.cff
+# with custom file paths
 pyproject_toml_file_path: str = os.path.join('somepath', 'pyproject.toml')
-citation_cff_file_path: str = os.path.join('somepath', 'CITATION.cff')
+citation_cff_file_path: str = os.path.join('someotherpath', 'CITATION.cff')
 
 update_pyproject_toml_with_citation_cff(pyproject_toml_file_path=pyproject_toml_file_path, citation_cff_file_path=citation_cff_file_path)
 ```
 
-### Updating CITATION.toml with metadata from pyprojects.toml
+### Updating CITATION.cff with metadata from pyprojects.toml
 
 ```python
 from cff2toml import update_citation_cff_with_pyproject_toml
 
-# update the CITATION.cff file with metadata
-# from pyprojects.cff file
+# update CITATION.cff with metadata
+# from pyprojects.cff
 # where both files are located in the working directory
 update_citation_cff_with_pyproject_toml()
 ```
@@ -58,13 +58,36 @@ update_citation_cff_with_pyproject_toml()
 ```python
 from cff2toml import update_pyproject_toml_with_citation_cff
 
-# update the CITATION.cff file with metadata
-# from pyprojects.cff file
-# from specific locations
+# update CITATION.cff with metadata
+# from pyprojects.cff
+# with custom file paths
 pyproject_toml_file_path: str = os.path.join('somepath', 'pyproject.toml')
-citation_cff_file_path: str = os.path.join('somepath', 'CITATION.cff')
+citation_cff_file_path: str = os.path.join('someotherpath', 'CITATION.cff')
 
 update_citation_cff_with_pyproject_toml(citation_cff_file_path=citation_cff_file_path, pyproject_toml_file_path=pyproject_toml_file_path)
+```
+
+### Setting the same version for both the pyprojects.toml file and CITATION.cff file
+
+```python
+from cff2toml import set_version_for_pyproject_toml_with_citation_cff
+
+# set same version for pyproject.toml
+# and CITATION.cff where both files are
+# located in the working directory
+set_version_for_pyproject_toml_with_citation_cff(version="2.0.0")
+```
+
+```python
+from cff2toml import update_pyproject_toml_with_citation_cff
+
+# set same version for pyproject.toml
+# and CITATION.cff where both files
+# have custom file paths
+pyproject_toml_file_path: str = os.path.join('somepath', 'pyproject.toml')
+citation_cff_file_path: str = os.path.join('someotherpath', 'CITATION.cff')
+
+set_version_for_pyproject_toml_with_citation_cff(version="2.0.0", pyproject_toml_file_path=pyproject_toml_file_path, citation_cff_file_path=citation_cff_file_path)
 ```
 
 ### Updating TOML file with metadata from CFF file
