@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, Tuple, Union
+from typing import Any, Callable, Dict, Tuple
 import toml
 import yaml
 
@@ -138,3 +138,22 @@ def set_version_for_pyproject_toml_and_citation_cff(version: str, pyproject_toml
                      toml_file_path=pyproject_toml_file_path)
 
     return pyproject_toml_object, citation_cff_object
+
+
+def get_version_for_pyproject_toml(pyproject_toml_file_path: str) -> str:
+    pyproject_toml_object: TOMLObject = load_toml_object(
+        toml_file_path=pyproject_toml_file_path)
+
+    pyproject_toml_version: str = pyproject_toml_object['project']['version']
+
+    return pyproject_toml_version
+
+
+def get_version_for_citation_cff(citation_cff_file_path: str) -> str:
+
+    citation_cff_object: CFFObject = load_cff_object(
+        cff_file_path=citation_cff_file_path)
+
+    citation_cff_version: str = citation_cff_object['version']
+
+    return citation_cff_version

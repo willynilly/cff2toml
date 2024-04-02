@@ -71,7 +71,49 @@ citation_cff_file_path: str = os.path.join('someotherpath', 'CITATION.cff')
 update_citation_cff_with_pyproject_toml(citation_cff_file_path=citation_cff_file_path, pyproject_toml_file_path=pyproject_toml_file_path)
 ```
 
-### Set the same version property for both pyprojects.toml file and CITATION.cff file
+### Get the version for pyprojects.toml file
+
+```python
+from cff2toml import get_version_for_pyproject_toml
+
+# get the version for pyproject.toml
+# where it is located in the working directory
+pyprpject_toml_version: str = get_version_for_pyproject_toml()
+```
+
+```python
+from cff2toml import get_version_for_pyproject_toml
+import os
+
+# get version for pyproject.toml
+# where it has a custom file path
+pyproject_toml_file_path: str = os.path.join('somepath', 'pyproject.toml')
+
+pyproject_toml_version: str = get_version_for_pyproject_toml( pyproject_toml_file_path=pyproject_toml_file_path)
+```
+
+### Get the version for CITATION.cff file
+
+```python
+from cff2toml import get_version_for_citation_cff
+
+# get the version for CITATION.cff
+# where it is located in the working directory
+citation_cff_version: str = get_version_for_citation_cff()
+```
+
+```python
+from cff2toml import get_version_for_citation_cff
+import os
+
+# get version for CITATION.cff
+# where it has a custom file path
+citation_cff_file_path: str = os.path.join('somepath', 'CITATION.cff')
+
+version: str = get_version_for_citation_cff(citation_cff_file_path=citation_cff_file_path)
+```
+
+### Set the same version for both pyprojects.toml file and CITATION.cff file
 
 ```python
 from cff2toml import set_version_for_pyproject_toml_and_citation_cff
@@ -185,8 +227,7 @@ For update_pyproject_toml_with_citation_cff() and update_citation_cff_with_pypro
 ## Roadmap
 
 1. Update author information for update_pyproject_toml_with_citation_cff() and update_citation_cff_with_pyproject_toml()
-2. Add get_versions_for_pyproject_toml_and_citation_cff() method that returns the current versions of both files as a tuple.
-3. Create CLI
+2. Create CLI
 
 ## License
 

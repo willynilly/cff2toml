@@ -207,7 +207,7 @@ def test_update_citation_cff_with_pyproject_toml(dummy_citation_cff_file_path, d
             assert cff_object['repository-code'] == 'https://github.com/willnilly/somewhereuncool'
 
 
-def test_set_version_for_citation_cff_with_pyproject_toml(dummy_citation_cff_file_path, dummy_pyproject_toml_file_path):
+def test_set_version_for_pyproject_toml_and_citation_cff(dummy_citation_cff_file_path, dummy_pyproject_toml_file_path):
     expected_version: str = '10.1.1'
     with TempCopiedFile(source_file_path=dummy_citation_cff_file_path) as tmp_dummy_citation_cff_file:
         with TempCopiedFile(source_file_path=dummy_pyproject_toml_file_path) as tmp_dummy_pyproject_toml_file:
@@ -260,3 +260,17 @@ def test_set_version_for_citation_cff_with_pyproject_toml(dummy_citation_cff_fil
             assert cff_object['license'] == 'Apache-2.0'
             assert cff_object['abstract'] == 'A module that does something cool.'
             assert cff_object['repository-code'] == 'https://github.com/willynilly/somewherecool'
+
+
+def test_get_version_for_citation_cff(dummy_citation_cff_file_path):
+    with TempCopiedFile(source_file_path=dummy_citation_cff_file_path) as tmp_dummy_citation_cff_file:
+        cff_object: CFFObject = load_cff_object(
+            cff_file_path=tmp_dummy_citation_cff_file.file_path)
+        assert cff_object['version'] == '0.0.2'
+
+
+def test_get_version_for_pyproject_toml(dummy_pyproject_toml_file_path):
+    with TempCopiedFile(source_file_path=dummy_pyproject_toml_file_path) as tmp_dummy_pyproject_toml_file:
+        toml_object: TOMLObject = load_toml_object(
+            toml_file_path=tmp_dummy_pyproject_toml_file.file_path)
+        assert toml_object['project']['version'] == '0.0.1'
