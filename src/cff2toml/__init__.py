@@ -6,3 +6,4 @@ from src.cff2toml.cff2toml import load_cff_object, load_toml_object
 from src.cff2toml.cff2toml import save_cff_object, save_toml_object
 from src.cff2toml.cff2toml import LoadCFFFileException, SaveCFFFileException
 from src.cff2toml.cff2toml import LoadTOMLFileException, SaveTOMLFileException
+from src.cff2toml.cff2toml import get_version_for_citation_cff, get_version_for_pyproject_toml
