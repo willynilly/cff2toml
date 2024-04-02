@@ -44,3 +44,8 @@ Source = "https://github.com/willynilly/cff2toml"
 testing = [
     "pytest==8.1.1",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
