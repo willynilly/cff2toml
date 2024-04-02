@@ -1,6 +1,7 @@
+from unittest.mock import patch
 import pytest
 import os
-from cff2toml.cff2toml import load_cff_object, load_toml_object, CFFObject, TOMLObject, TransformCFFObjectWithTOMLObjectFunction, TransformTOMLObjectWithCFFObjectFunction, set_version_for_pyproject_toml_and_citation_cff, update_cff_with_toml, update_citation_cff_with_pyproject_toml, update_pyproject_toml_with_citation_cff, update_toml_with_cff
+from cff2toml.cff2toml import get_version_for_citation_cff, get_version_for_pyproject_toml, load_cff_object, load_toml_object, CFFObject, TOMLObject, TransformCFFObjectWithTOMLObjectFunction, TransformTOMLObjectWithCFFObjectFunction, set_version_for_pyproject_toml_and_citation_cff, update_cff_with_toml, update_citation_cff_with_pyproject_toml, update_pyproject_toml_with_citation_cff, update_toml_with_cff
 
 import tempfile
 import shutil
@@ -264,13 +265,29 @@ def test_set_version_for_pyproject_toml_and_citation_cff(dummy_citation_cff_file
 
 def test_get_version_for_citation_cff(dummy_citation_cff_file_path):
     with TempCopiedFile(source_file_path=dummy_citation_cff_file_path) as tmp_dummy_citation_cff_file:
-        cff_object: CFFObject = load_cff_object(
-            cff_file_path=tmp_dummy_citation_cff_file.file_path)
-        assert cff_object['version'] == '0.0.2'
+        version: str = get_version_for_citation_cff(
+            citation_cff_file_path=tmp_dummy_citation_cff_file.file_path)
+        assert version == '0.0.2'
 
 
 def test_get_version_for_pyproject_toml(dummy_pyproject_toml_file_path):
     with TempCopiedFile(source_file_path=dummy_pyproject_toml_file_path) as tmp_dummy_pyproject_toml_file:
-        toml_object: TOMLObject = load_toml_object(
-            toml_file_path=tmp_dummy_pyproject_toml_file.file_path)
-        assert toml_object['project']['version'] == '0.0.1'
+        version: str = get_version_for_pyproject_toml(
+            pyproject_toml_file_path=tmp_dummy_pyproject_toml_file.file_path)
+        assert version == '0.0.1'
+
+
+def test_get_version_for_citation_cff_with_default_file_path(dummy_citation_cff_file_path):
+    with TempCopiedFile(source_file_path=dummy_citation_cff_file_path) as tmp_dummy_citation_cff_file:
+        # patch the default parameters
+        with patch('cff2toml.cff2toml.get_version_for_citation_cff.__defaults__', (tmp_dummy_citation_cff_file.file_path,)):
+            version: str = get_version_for_citation_cff()
+            assert version == '0.0.2'
+
+
+def test_get_version_for_pyproject_toml_with_default_file_path(dummy_pyproject_toml_file_path):
+    with TempCopiedFile(source_file_path=dummy_pyproject_toml_file_path) as tmp_dummy_pyproject_toml_file:
+        # patch the default parameters
+        with patch('cff2toml.cff2toml.get_version_for_pyproject_toml.__defaults__', (tmp_dummy_pyproject_toml_file.file_path,)):
+            version: str = get_version_for_pyproject_toml()
+            assert version == '0.0.1'
