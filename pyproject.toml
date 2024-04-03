@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cff2toml"
-version = "1.2.4"
+version = "2.0.0"
 description = "A module to synchronize metadata between TOML and CFF files, including between pyproject.toml and CITATION.cff files."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -33,7 +33,7 @@ classifiers = [
     "Topic :: Software Development",
     "Topic :: Utilities"
 ]
-dependencies = ["toml==0.10.2", "PyYAML==6.0.1"]
+dependencies = ["toml==0.10.2", "PyYAML==6.0.1", "pydash==8.0.0"]
 
 [project.urls]
 Documentation = "https://github.com/willynilly/cff2toml#readme"

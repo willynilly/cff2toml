@@ -11,6 +11,10 @@ A module to synchronize metadata between TOML and CFF files, including between p
 
 - [Installation](#installation)
 - [Usage](#usage)
+  - [Setting Metadata](#setting-metadata)
+  - [Getting Metadata](#getting-metadata)
+  - [Loading Metadata](#loading-metadata)
+  - [Saving Metadata](#saving-metadata)
 - [Limitations](#limitations)
 - [Roadmap](#roadmap)
 - [License](#license)
@@ -23,55 +27,123 @@ pip install cff2toml
 
 ## Usage
 
-### Update pyproject.toml with metadata from CITATION.cff
+This library allows you to load, save, set, and get metadata from CFF and TOML files.
+
+One common use case is to synchronize metadata between pyproject.toml and CITATION.cff files in a Python project.
+
+In some of the examples below, you will see the idea of property paths. Property paths are a way to get and set nested data. In this library, property paths use the [deep path strings as defined by pydash](https://pydash.readthedocs.io/en/latest/deeppath.html).
+
+### Setting Metadata
+
+#### Set pyproject.toml with metadata from CITATION.cff
 
 ```python
-from cff2toml import update_pyproject_toml_with_citation_cff
+from cff2toml import set_pyproject_toml_with_citation_cff
 
-# update pyproject.toml with metadata
+# set pyproject.toml with metadata
 # from CITATION.cff
 # where both files are located in the working directory
-update_pyproject_toml_with_citation_cff()
+set_pyproject_toml_with_citation_cff()
 ```
 
 ```python
-from cff2toml import update_pyproject_toml_with_citation_cff
+from cff2toml import set_pyproject_toml_with_citation_cff
 import os
 
-# update pyproject.toml with metadata
+# set pyproject.toml with metadata
 # from CITATION.cff where the files
 # have custom file paths
 pyproject_toml_file_path: str = os.path.join('somepath', 'pyproject.toml')
 citation_cff_file_path: str = os.path.join('someotherpath', 'CITATION.cff')
 
-update_pyproject_toml_with_citation_cff(pyproject_toml_file_path=pyproject_toml_file_path, citation_cff_file_path=citation_cff_file_path)
+set_pyproject_toml_with_citation_cff(pyproject_toml_file_path=pyproject_toml_file_path, citation_cff_file_path=citation_cff_file_path)
 ```
 
-### Update CITATION.cff with metadata from pyprojects.toml
+#### Set CITATION.cff with metadata from pyprojects.toml
 
 ```python
-from cff2toml import update_citation_cff_with_pyproject_toml
+from cff2toml import set_citation_cff_with_pyproject_toml
 
-# update CITATION.cff with metadata
+# set CITATION.cff with metadata
 # from pyprojects.cff
 # where both files are located in the working directory
-update_citation_cff_with_pyproject_toml()
+set_citation_cff_with_pyproject_toml()
 ```
 
 ```python
-from cff2toml import update_citation_cff_with_pyproject_toml
+from cff2toml import set_citation_cff_with_pyproject_toml
 import os
 
-# update CITATION.cff with metadata
+# set CITATION.cff with metadata
 # from pyprojects.cff where the files
 # have custom file paths
 pyproject_toml_file_path: str = os.path.join('somepath', 'pyproject.toml')
 citation_cff_file_path: str = os.path.join('someotherpath', 'CITATION.cff')
 
-update_citation_cff_with_pyproject_toml(citation_cff_file_path=citation_cff_file_path, pyproject_toml_file_path=pyproject_toml_file_path)
+set_citation_cff_with_pyproject_toml(citation_cff_file_path=citation_cff_file_path, pyproject_toml_file_path=pyproject_toml_file_path)
 ```
 
-### Get the version for pyprojects.toml file
+#### Set pyproject.toml and CITATION.cff to have a specific version
+
+```python
+from cff2toml import set_version_for_citation_cff_and_pyproject_toml
+
+# set CITATION.cff
+# and pyproject.toml to have same version
+# where both files are
+# located in the working directory
+set_version_for_citation_cff_and_pyproject_toml(version="2.0.0")
+```
+
+```python
+from cff2toml import set_version_for_citation_cff_and_pyproject_toml
+import os
+
+# set CITATION.cff
+# and pyproject.toml to have the same version
+# where the files
+# have custom file paths
+citation_cff_file_path: str = os.path.join('someotherpath', 'CITATION.cff')
+pyproject_toml_file_path: str = os.path.join('somepath', 'pyproject.toml')
+
+set_version_for_citation_cff_and_pyproject_toml(version="2.0.0",  citation_cff_file_path=citation_cff_file_path, pyproject_toml_file_path=pyproject_toml_file_path)
+```
+
+#### Set a TOML file with metadata from a CFF file
+
+```python
+from cff2toml import set_toml_with_cff, CFFObject, TOMLObject, set_toml_property_with_cff_property
+import os
+
+toml_file_path: str = os.path.join('somepath', 'some_toml_file.toml')
+cff_file_path: str = os.path.join('someotherpath', 'some_cff_file.cff')
+
+def transform_toml_object(toml_object:TOMLObject, cff_object:CFFObject) -> TOMLObject:
+    toml_object = set_toml_property_with_cff_property(toml_property_path='project.name', toml_object=toml_object, cff_property_path='title', cff_object=cff_object)
+    return toml_object
+
+toml_object: TOMLObject = set_toml_with_cff(toml_file_path=toml_file_path, cff_file_path=cff_file_path,  transform_toml_object_func=transform_toml_object)
+```
+
+#### Set a CFF file with metadata from a TOML file
+
+```python
+from cff2toml import set_cff_with_toml, CFFObject, TOMLObject, set_cff_property_with_toml_property
+import os
+
+cff_file_path: str = os.path.join('somepath', 'some_cff_file.cff')
+toml_file_path: str = os.path.join('somepath', 'some_toml_file.toml')
+
+def transform_cff_object(cff_object:CFFObject, toml_object:TOMLObject) -> CFFObject:
+    cff_object = set_cff_property_with_toml_property(cff_property_path='title', cff_object=cff_object, toml_property_path='project.name', toml_object=toml_object)
+    return cff_object
+
+cff_object: CFFObject = set_cff_with_toml(cff_file_path=cff_file_path, toml_file_path=toml_file_path, transform_cff_object_func=cff_object_transformer)
+```
+
+### Getting Metadata
+
+#### Get the version for pyprojects.toml file
 
 ```python
 from cff2toml import get_version_for_pyproject_toml
@@ -92,7 +164,7 @@ pyproject_toml_file_path: str = os.path.join('somepath', 'pyproject.toml')
 pyproject_toml_version: str = get_version_for_pyproject_toml( pyproject_toml_file_path=pyproject_toml_file_path)
 ```
 
-### Get the version for CITATION.cff file
+#### Get the version for CITATION.cff file
 
 ```python
 from cff2toml import get_version_for_citation_cff
@@ -113,63 +185,9 @@ citation_cff_file_path: str = os.path.join('somepath', 'CITATION.cff')
 version: str = get_version_for_citation_cff(citation_cff_file_path=citation_cff_file_path)
 ```
 
-### Set the same version for both pyprojects.toml file and CITATION.cff file
+### Loading Metadata
 
-```python
-from cff2toml import set_version_for_pyproject_toml_and_citation_cff
-
-# set same version for pyproject.toml
-# and CITATION.cff where both files are
-# located in the working directory
-set_version_for_pyproject_toml_and_citation_cff(version="2.0.0")
-```
-
-```python
-from cff2toml import set_version_for_pyproject_toml_and_citation_cff
-import os
-
-# set same version for pyproject.toml
-# and CITATION.cff where the files
-# have custom file paths
-pyproject_toml_file_path: str = os.path.join('somepath', 'pyproject.toml')
-citation_cff_file_path: str = os.path.join('someotherpath', 'CITATION.cff')
-
-set_version_for_pyproject_toml_with_citation_cff(version="2.0.0", pyproject_toml_file_path=pyproject_toml_file_path, citation_cff_file_path=citation_cff_file_path)
-```
-
-### Update a TOML file with metadata from a CFF file
-
-```python
-from cff2toml import update_toml_with_cff, CFFObject, TOMLObject
-import os
-
-toml_file_path: str = os.path.join('somepath', 'some_toml_file.toml')
-cff_file_path: str = os.path.join('somepath', 'some_cff_file.cff')
-
-def transformer(toml_object:TOMLObject, cff_object:CFFObject) -> TOMLObject:
-    toml_object['somekey'] = cff_object['someotherkey']
-    return toml_object
-
-updated_toml_object: TOMLObject = update_toml_with_cff(toml_file_path=toml_file_path, cff_file_path=cff_file_path,  transform_toml_object_func=transformer)
-```
-
-### Update a CFF file with metadata from a TOML file
-
-```python
-from cff2toml import update_cff_with_toml, CFFObject, TOMLObject
-import os
-
-toml_file_path: str = os.path.join('somepath', 'some_toml_file.toml')
-cff_file_path: str = os.path.join('somepath', 'some_cff_file.cff')
-
-def transformer(cff_object:CFFObject, toml_object:TOMLObject) -> CFFObject:
-    cff_object['somekey'] = toml_object['someotherkey']
-    return cff_object
-
-updated_cff_object: CFFObject = update_cff_with_toml(cff_file_path=cff_file_path, toml_file_path=toml_file_path, transform_cff_object_func=transformer)
-```
-
-### Load a TOML file object
+#### Load a TOML object from a TOML file
 
 ```python
 from cff2toml import load_toml_object, TOMLObject
@@ -177,25 +195,10 @@ import os
 
 toml_file_path: str = os.path.join('somepath', 'some_toml_file.toml')
 toml_object: TOMLObject = load_toml_object(toml_file_path=toml_file_path)
-print(toml_object['somekey'])
+print(toml_object)
 ```
 
-### Save a TOML file object
-
-```python
-from cff2toml import load_toml_object, save_toml_object, TOMLObject
-import os
-
-toml_file_path: str = os.path.join('somepath', 'some_toml_file.toml')
-toml_object: TOMLObject = load_toml_object(toml_file_path=toml_file_path)
-print(toml_object['somekey'])
-
-toml_object['somekey'] = 'somevalue'
-save_toml_object(toml_object=toml_object, toml_file_path=toml_file_path)
-
-```
-
-### Load a CFF file object
+#### Load a CFF object from a CFF file
 
 ```python
 from cff2toml import load_cff_object, CFFObject
@@ -203,31 +206,51 @@ import os
 
 cff_file_path: str = os.path.join('somepath', 'some_cff_file.cff')
 cff_object: CFFObject = load_cff_object(cff_file_path=cff_file_path)
-print(cff_object['somekey'])
+print(cff_object)
 ```
 
-### Save a CFF file object
+### Saving Metadata
+
+#### Save a CFF object to a CFF file
 
 ```python
-from cff2toml import load_cff_object, save_cff_object, CFFObject
+from cff2toml import load_cff_object, save_cff_object, CFFObject, set_cff_property
 import os
 
 cff_file_path: str = os.path.join('somepath', 'some_cff_file.cff')
 cff_object: CFFObject = load_cff_object(cff_file_path)
-print(cff_object['somekey'])
+print(cff_object)
 
-cff_object['somekey'] = 'somevalue'
+cff_object = set_cff_property(cff_object=cff_boject, property_path='somekey.someotherkey', value='somevalue')
+
 save_cff_object(cff_object=cff_object, cff_file_path=cff_file_path)
+```
+
+#### Save a TOML object to a TOML file
+
+```python
+from cff2toml import load_toml_object, save_toml_object, TOMLObject, set_toml_property
+import os
+
+toml_file_path: str = os.path.join('somepath', 'some_toml_file.toml')
+toml_object: TOMLObject = load_toml_object(toml_file_path=toml_file_path)
+print(toml_object)
+
+toml_object = set_toml_property(toml_object=cff_boject, property_path='somekey.someotherkey', value='somevalue')
+
+save_toml_object(toml_object=toml_object, toml_file_path=toml_file_path)
+
 ```
 
 ## Limitations
 
-For update_pyproject_toml_with_citation_cff() and update_citation_cff_with_pyproject_toml(), the only metadata that is currently updated between CITATION.cff and pyproject.toml files is: CFF (title, version, abstract, license, repository-code) <-> TOML (project.name, project.version, project.description, project.license, project.urls.Source).
+For set_pyproject_toml_with_citation_cff() and set_citation_cff_with_pyproject_toml(), the only metadata that is currently changed between CITATION.cff and pyproject.toml files is: CFF (title, version, abstract, license, repository-code) <-> TOML (project.name, project.version, project.description, project.license, project.urls.Source).
 
 ## Roadmap
 
-1. Update author information for update_pyproject_toml_with_citation_cff() and update_citation_cff_with_pyproject_toml()
-2. Create CLI
+1. Update author information for set_pyproject_toml_with_citation_cff() and set_citation_cff_with_pyproject_toml()
+2. Add documentation for module methods
+3. Create CLI
 
 ## License
 
