@@ -1,0 +1,108 @@
+from typing import Any, Dict, List, Tuple, Union
+from cff2toml.models.files.cff_file import CffFile
+from cff2toml.models.files.pyproject_toml_file import PyprojectTomlFile
+from cff2toml.models.people.author import Author, CffAuthorData, PyprojectTomlAuthorData
+
+# {common property name} -> (pyproject.toml property path}, {cff property path})
+PROPERTY_MAPPINGS: Dict[str, Tuple[str, str]] = {
+    "title": ("project.name", "title"),
+    "version": ("project.version", "version"),
+    "description": ("project.description", "abstract"),
+    "license": ("project.license", "license"),
+    "code_repository_url": ("project.urls.Source", "repository-code"),
+    "authors": ("project.authors", "authors")
+}
+
+
+class CffAndPyprojectTomlSynchronizerException(Exception):
+    pass
+
+
+# synchronizer
+class CffAndPyprojectTomlSynchronizer:
+
+    def __init__(self, cff_file: Union[CffFile, None] = None, pyproject_toml_file: Union[PyprojectTomlFile, None] = None):
+        if cff_file is None:
+            cff_file = CffFile()
+        if pyproject_toml_file is None:
+            pyproject_toml_file = PyprojectTomlFile()
+
+        self.cff_file = cff_file
+        self.pyproject_toml_file = pyproject_toml_file
+
+    def update_cff_with_pyproject_toml(self, delete_missing_metadata: bool = True) -> None:
+        for common_property_name, (pyproject_toml_property_path, cff_property_path) in PROPERTY_MAPPINGS.items():
+            value = self.pyproject_toml_file.get_metadata(
+                property_path=pyproject_toml_property_path)
+            if value is not None:
+                if common_property_name == "authors":
+                    pass
+                else:
+                    self.cff_file.set_metadata(
+                        property_path=cff_property_path, value=value)
+            else:
+                if delete_missing_metadata:
+                    # delete corresponding property in cff
+                    # if property is missing in pyproject_toml
+                    self.cff_file.delete_metadata(
+                        property_path=cff_property_path)
+
+    def update_pyproject_toml_with_cff(self, delete_missing_metadata: bool = True) -> None:
+        for common_property_name, (pyproject_toml_property_path, cff_property_path) in PROPERTY_MAPPINGS.items():
+            value = self.cff_file.get_metadata(property_path=cff_property_path)
+            if value is not None:
+                if common_property_name == "authors":
+                    pass
+                else:
+                    self.pyproject_toml_file.set_metadata(
+                        property_path=pyproject_toml_property_path, value=value)
+            else:
+                if delete_missing_metadata:
+                    # delete corresponding property in pyproject_toml
+                    # if property is missing in cff
+                    self.pyproject_toml_file.delete_metadata(
+                        property_path=pyproject_toml_property_path)
+
+    def _set_common_property(self, common_property_name: str, value: Any):
+        if common_property_name in PROPERTY_MAPPINGS:
+            pyproject_toml_property_path: str = PROPERTY_MAPPINGS[common_property_name][0]
+            cff_property_path: str = PROPERTY_MAPPINGS[common_property_name][1]
+            self.cff_file.set_metadata(cff_property_path, value)
+            self.pyproject_toml_file.set_metadata(
+                pyproject_toml_property_path, value)
+        else:
+            raise CffAndPyprojectTomlSynchronizerException(
+                f"Cannot set common property: {common_property_name} because it cannot be found.")
+
+    def set_version(self, version: str) -> None:
+        self._set_common_property(
+            common_property_name="version", value=version)
+
+    def set_title(self, title: str) -> None:
+        self._set_common_property(common_property_name="version", value=title)
+
+    def set_code_repository_url(self, code_repository_url: str) -> None:
+        self._set_common_property(
+            common_property_name="code_repository_url", value=code_repository_url)
+
+    def set_description(self, description: str) -> None:
+        self._set_common_property(
+            common_property_name="description", value=description)
+
+    def set_license(self, license: str) -> None:
+        self._set_common_property(
+            common_property_name="license", value=license)
+
+    def set_authors(self, authors: List[Author]):
+        author_data_for_cff: list[CffAuthorData] = [
+            author.to_cff_data() for author in authors]
+        author_data_for_pyproject_toml: list[PyprojectTomlAuthorData] = [
+            author.to_pyproject_toml_data() for author in authors]
+
+        self.cff_file.set_metadata("authors", author_data_for_cff)
+        self.pyproject_toml_file.set_metadata(
+            "authors", author_data_for_pyproject_toml)
+
+    def save(self):
+        self.cff_file.save()
+        self.pyproject_toml_file.save()

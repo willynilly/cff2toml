@@ -28,7 +28,7 @@ dependencies = ["toml==0.10.2", "PyYAML==6.0.1"]
 [project.urls]
 Documentation = "https://github.com/willynilly/somewhereuncool#readme"
 Issues = "https://github.com/willynilly/somewhereuncool/issues"
-Source = "https://github.com/willnilly/somewhereuncool"
+Source = "https://github.com/willynilly/somewhereuncool"
 
 [project.optional-dependencies]
 testing = [
