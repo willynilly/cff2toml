@@ -1,12 +1,8 @@
 
-from cff2toml.models.people.human_names import is_human_name, parse_human_name
+from cff2toml.models.agents.people.human_name import HumanName, HumanNameParser
 
 
-def test_is_human_name_for_empty_name():
-    assert is_human_name('') == False
-
-
-def test_parse_human_name():
+def test_parse_with_different_human_names():
 
     human_names_to_parts = {
         'Bob Smith Jr': ('Bob', '', '', 'Smith', 'Jr'),
@@ -22,11 +18,11 @@ def test_parse_human_name():
         'Tony X': ('Tony', '', '', 'X', ''),
     }
 
-    for human_name, (expected_first_name, expected_middle_name, expected_particle, expected_last_name, expected_suffix) in human_names_to_parts.items():
-        first_name, middle_name, particle, last_name, suffix = parse_human_name(
-            human_name=human_name)
-        assert first_name == expected_first_name
-        assert middle_name == expected_middle_name
-        assert particle == expected_particle
-        assert last_name == expected_last_name
-        assert suffix == expected_suffix
+    for human_name_to_parse, (expected_first_name, expected_middle_name, expected_particle, expected_last_name, expected_suffix) in human_names_to_parts.items():
+        human_name: HumanName = HumanNameParser.parse(
+            text=human_name_to_parse)
+        assert human_name.first_name == expected_first_name
+        assert human_name.middle_name == expected_middle_name
+        assert human_name.particle == expected_particle
+        assert human_name.last_name == expected_last_name
+        assert human_name.suffix == expected_suffix

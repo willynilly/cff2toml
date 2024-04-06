@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Tuple, Union
+from cff2toml.models.agents.authors.synchronizers.cff_and_pyproject_toml_author_synchronizer import Author, CffAndPyprojectTomlAuthorSynchronizer, CffAuthorData, PyprojectTomlAuthorData
 from cff2toml.models.files.cff_file import CffFile
 from cff2toml.models.files.pyproject_toml_file import PyprojectTomlFile
-from cff2toml.models.people.author import Author, CffAuthorData, PyprojectTomlAuthorData
 
 # {common property name} -> (pyproject.toml property path}, {cff property path})
 PROPERTY_MAPPINGS: Dict[str, Tuple[str, str]] = {
@@ -14,12 +14,12 @@ PROPERTY_MAPPINGS: Dict[str, Tuple[str, str]] = {
 }
 
 
-class CffAndPyprojectTomlSynchronizerException(Exception):
+class CffAndPyprojectTomlFileSynchronizerException(Exception):
     pass
 
 
 # synchronizer
-class CffAndPyprojectTomlSynchronizer:
+class CffAndPyprojectTomlFileSynchronizer:
 
     def __init__(self, cff_file: Union[CffFile, None] = None, pyproject_toml_file: Union[PyprojectTomlFile, None] = None):
         if cff_file is None:
@@ -36,7 +36,8 @@ class CffAndPyprojectTomlSynchronizer:
                 property_path=pyproject_toml_property_path)
             if value is not None:
                 if common_property_name == "authors":
-                    pass
+                    self._update_cff_with_pyproject_toml_authors(
+                        delete_missing_metadata=delete_missing_metadata)
                 else:
                     self.cff_file.set_metadata(
                         property_path=cff_property_path, value=value)
@@ -47,12 +48,16 @@ class CffAndPyprojectTomlSynchronizer:
                     self.cff_file.delete_metadata(
                         property_path=cff_property_path)
 
+    def _update_cff_with_pyproject_toml_authors(self, delete_missing_metadata: bool = True):
+        raise NotImplementedError
+
     def update_pyproject_toml_with_cff(self, delete_missing_metadata: bool = True) -> None:
         for common_property_name, (pyproject_toml_property_path, cff_property_path) in PROPERTY_MAPPINGS.items():
             value = self.cff_file.get_metadata(property_path=cff_property_path)
             if value is not None:
                 if common_property_name == "authors":
-                    pass
+                    self._update_pyproject_toml_with_cff_authors(
+                        delete_missing_metadata=delete_missing_metadata)
                 else:
                     self.pyproject_toml_file.set_metadata(
                         property_path=pyproject_toml_property_path, value=value)
@@ -63,6 +68,9 @@ class CffAndPyprojectTomlSynchronizer:
                     self.pyproject_toml_file.delete_metadata(
                         property_path=pyproject_toml_property_path)
 
+    def _update_pyproject_toml_with_cff_authors(self, delete_missing_metadata: bool = True):
+        raise NotImplementedError
+
     def _set_common_property(self, common_property_name: str, value: Any):
         if common_property_name in PROPERTY_MAPPINGS:
             pyproject_toml_property_path: str = PROPERTY_MAPPINGS[common_property_name][0]
@@ -71,7 +79,7 @@ class CffAndPyprojectTomlSynchronizer:
             self.pyproject_toml_file.set_metadata(
                 pyproject_toml_property_path, value)
         else:
-            raise CffAndPyprojectTomlSynchronizerException(
+            raise CffAndPyprojectTomlFileSynchronizerException(
                 f"Cannot set common property: {common_property_name} because it cannot be found.")
 
     def set_version(self, version: str) -> None:
@@ -79,7 +87,7 @@ class CffAndPyprojectTomlSynchronizer:
             common_property_name="version", value=version)
 
     def set_title(self, title: str) -> None:
-        self._set_common_property(common_property_name="version", value=title)
+        self._set_common_property(common_property_name="title", value=title)
 
     def set_code_repository_url(self, code_repository_url: str) -> None:
         self._set_common_property(
@@ -95,13 +103,13 @@ class CffAndPyprojectTomlSynchronizer:
 
     def set_authors(self, authors: List[Author]):
         author_data_for_cff: list[CffAuthorData] = [
-            author.to_cff_data() for author in authors]
+            CffAndPyprojectTomlAuthorSynchronizer.to_cff_author_data(author=author) for author in authors]
         author_data_for_pyproject_toml: list[PyprojectTomlAuthorData] = [
-            author.to_pyproject_toml_data() for author in authors]
+            CffAndPyprojectTomlAuthorSynchronizer.to_pyproject_toml_author_data(author=author) for author in authors]
 
         self.cff_file.set_metadata("authors", author_data_for_cff)
         self.pyproject_toml_file.set_metadata(
-            "authors", author_data_for_pyproject_toml)
+            "project.authors", author_data_for_pyproject_toml)
 
     def save(self):
         self.cff_file.save()

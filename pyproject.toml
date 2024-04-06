@@ -33,7 +33,7 @@ classifiers = [
     "Topic :: Software Development",
     "Topic :: Utilities"
 ]
-dependencies = ["toml==0.10.2", "PyYAML==6.0.1", "pydash==8.0.0"]
+dependencies = ["toml>=0.10.2", "PyYAML>=6.0.1", "pydash>=8.0.0", "pydantic>=2.6.4"]
 
 [project.urls]
 Documentation = "https://github.com/willynilly/cff2toml#readme"
@@ -42,7 +42,7 @@ Source = "https://github.com/willynilly/cff2toml"
 
 [project.optional-dependencies]
 testing = [
-    "pytest==8.1.1",
+    "pytest>=8.1.1",
 ]
 
 [tool.pytest.ini_options]

@@ -19,10 +19,11 @@ class SaveCffFileException(Exception):
 class CffFile(MetadataFile):
 
     def __init__(self, file_path: str = DEFAULT_CITATION_CFF_FILE_PATH):
+        super().__init__(file_path=file_path)
         self.file_path = file_path
         try:
             with open(self.file_path, 'r') as cff_file:
-                self._metadata = yaml.safe_load(cff_file)
+                self._metadata.from_dict(yaml.safe_load(cff_file))
         except:
             raise LoadCffFileException(
                 f"Cannot load this CFF file: {self.file_path}")
@@ -33,7 +34,7 @@ class CffFile(MetadataFile):
         if self._metadata is not None:
             try:
                 with open(file_path, 'w') as cff_file:
-                    yaml.safe_dump(self._metadata, cff_file)
+                    yaml.safe_dump(self._metadata.to_dict(), cff_file)
             except:
                 raise SaveCffFileException(
                     f"Cannot save this CFF file: {file_path}")

@@ -1,235 +1,213 @@
+from cff2toml.models.files.cff_file import CffFile
+from cff2toml.models.files.pyproject_toml_file import PyprojectTomlFile
+from cff2toml.models.files.synchronizers.cff_and_pyproject_toml_file_synchronizer import CffAndPyprojectTomlFileSynchronizer
 from tests.temp_copied_file import TempCopiedFile
 
 
-def test_update_cff_with_pyproject_toml():
-    assert False
+def test_update_cff_with_pyproject_toml_only_deletes_metadata_for_mapped_properties_missing_in_pyproject_toml(dummy_cff_and_pyproject_toml_file_synchronizer):
+    cff_file = dummy_cff_and_pyproject_toml_file_synchronizer.cff_file
+    pyproject_toml_file = dummy_cff_and_pyproject_toml_file_synchronizer.pyproject_toml_file
+
+    assert cff_file.has_metadata('license') == True
+    assert pyproject_toml_file.has_metadata('project.license') == True
+    pyproject_toml_file.delete_metadata('project.license')
+    assert pyproject_toml_file.has_metadata('project.license') == False
+
+    assert cff_file.has_metadata('version') == True
+    assert cff_file.has_metadata('project.version') == False
+    assert pyproject_toml_file.has_metadata('version') == False
+    assert pyproject_toml_file.has_metadata('project.version') == True
+    assert cff_file.metadata_version == '0.0.2'
+    assert pyproject_toml_file.metadata_project_version == '0.0.1'
+
+    dummy_cff_and_pyproject_toml_file_synchronizer.update_cff_with_pyproject_toml(
+        delete_missing_metadata=True)
+
+    # should remove license from cff since we first remove corresponding
+    # mapped project project.license from pyproject_toml
+    assert cff_file.has_metadata('license') == False
+    assert pyproject_toml_file.has_metadata('project.license') == False
+
+    assert cff_file.has_metadata('version') == True
+    assert cff_file.has_metadata('project.version') == False
+    assert pyproject_toml_file.has_metadata('version') == False
+    assert pyproject_toml_file.has_metadata('project.version') == True
+    assert cff_file.metadata_version == '0.0.1'
+    assert pyproject_toml_file.metadata_project_version == '0.0.1'
 
 
-def test_update_pyproject_toml_with_cff():
-    assert False
+def test_update_pyproject_toml_with_cff_only_deletes_metadata_for_mapped_properties_missing_in_cff(dummy_cff_and_pyproject_toml_file_synchronizer):
+    cff_file = dummy_cff_and_pyproject_toml_file_synchronizer.cff_file
+    pyproject_toml_file = dummy_cff_and_pyproject_toml_file_synchronizer.pyproject_toml_file
+
+    assert pyproject_toml_file.has_metadata('project.license') == True
+    assert cff_file.has_metadata('license') == True
+    cff_file.delete_metadata('license')
+    assert cff_file.has_metadata('license') == False
+
+    assert pyproject_toml_file.has_metadata('project.version') == True
+    assert pyproject_toml_file.has_metadata('version') == False
+    assert cff_file.has_metadata('project.version') == False
+    assert cff_file.has_metadata('version') == True
+    assert pyproject_toml_file.metadata_project_version == '0.0.1'
+    assert cff_file.metadata_version == '0.0.2'
+
+    dummy_cff_and_pyproject_toml_file_synchronizer.update_pyproject_toml_with_cff(
+        delete_missing_metadata=True)
+
+    # should remove project.license from project_toml since we first remove corresponding
+    # mapped project license from cff
+    assert pyproject_toml_file.has_metadata('project.license') == False
+    assert cff_file.has_metadata('license') == False
+
+    assert pyproject_toml_file.has_metadata('project.version') == True
+    assert pyproject_toml_file.has_metadata('version') == False
+    assert cff_file.has_metadata('project.version') == False
+    assert cff_file.has_metadata('version') == True
+    assert pyproject_toml_file.metadata_project_version == '0.0.2'
+    assert cff_file.metadata_version == '0.0.2'
 
 
-def test_save():
-    assert False
+def test_save(dummy_cff_and_pyproject_toml_file_synchronizer):
+    cff_file = dummy_cff_and_pyproject_toml_file_synchronizer.cff_file
+    pyproject_toml_file = dummy_cff_and_pyproject_toml_file_synchronizer.pyproject_toml_file
+
+    assert cff_file.metadata_version == '0.0.2'
+    assert pyproject_toml_file.metadata_project_version == '0.0.1'
+
+    dummy_cff_and_pyproject_toml_file_synchronizer.set_version('70.0.0')
+
+    # should change internal representation
+    assert cff_file.metadata_version == '70.0.0'
+    assert pyproject_toml_file.metadata_project_version == '70.0.0'
+
+    check_cff_file: CffFile = CffFile(file_path=cff_file.file_path)
+    check_pyproject_toml_file: PyprojectTomlFile = PyprojectTomlFile(
+        file_path=pyproject_toml_file.file_path)
+
+    # should not save
+    assert check_cff_file.metadata_version == '0.0.2'
+    assert check_pyproject_toml_file.metadata_project_version == '0.0.1'
+
+    dummy_cff_and_pyproject_toml_file_synchronizer.save()
+
+    # should save
+
+    assert cff_file.metadata_version == '70.0.0'
+    assert pyproject_toml_file.metadata_project_version == '70.0.0'
 
 
-def test_set_version():
-    assert False
+def test_set_version(dummy_cff_and_pyproject_toml_file_synchronizer):
+    cff_file = dummy_cff_and_pyproject_toml_file_synchronizer.cff_file
+    pyproject_toml_file = dummy_cff_and_pyproject_toml_file_synchronizer.pyproject_toml_file
+
+    assert cff_file.metadata_version == '0.0.2'
+    assert pyproject_toml_file.metadata_project_version == '0.0.1'
+
+    dummy_cff_and_pyproject_toml_file_synchronizer.set_version('70.0.0')
+
+    # should change internal representation
+    assert cff_file.metadata_version == '70.0.0'
+    assert pyproject_toml_file.metadata_project_version == '70.0.0'
+
+    check_cff_file: CffFile = CffFile(file_path=cff_file.file_path)
+    check_pyproject_toml_file: PyprojectTomlFile = PyprojectTomlFile(
+        file_path=pyproject_toml_file.file_path)
+
+    # should not save
+    assert check_cff_file.metadata_version == '0.0.2'
+    assert check_pyproject_toml_file.metadata_project_version == '0.0.1'
 
 
-def test_set_description():
-    assert False
+def test_set_description(dummy_cff_and_pyproject_toml_file_synchronizer):
+    cff_file = dummy_cff_and_pyproject_toml_file_synchronizer.cff_file
+    pyproject_toml_file = dummy_cff_and_pyproject_toml_file_synchronizer.pyproject_toml_file
+
+    assert cff_file.metadata_abstract == 'A module that does something cool.'
+    assert pyproject_toml_file.metadata_project_description == 'A module that does something uncool.'
+
+    dummy_cff_and_pyproject_toml_file_synchronizer.set_description(
+        'A module that does something cooler.')
+
+    # should change internal representation
+    assert cff_file.metadata_abstract == 'A module that does something cooler.'
+    assert pyproject_toml_file.metadata_project_description == 'A module that does something cooler.'
+
+    check_cff_file: CffFile = CffFile(file_path=cff_file.file_path)
+    check_pyproject_toml_file: PyprojectTomlFile = PyprojectTomlFile(
+        file_path=pyproject_toml_file.file_path)
+
+    # should not save
+    assert check_cff_file.metadata_abstract == 'A module that does something cool.'
+    assert check_pyproject_toml_file.metadata_project_description == 'A module that does something uncool.'
 
 
-def test_set_code_repository_url():
-    assert False
+def test_set_code_repository_url(dummy_cff_and_pyproject_toml_file_synchronizer):
+    cff_file = dummy_cff_and_pyproject_toml_file_synchronizer.cff_file
+    pyproject_toml_file = dummy_cff_and_pyproject_toml_file_synchronizer.pyproject_toml_file
+
+    assert cff_file.metadata_repository_code == 'https://github.com/willynilly/somewherecool'
+    assert pyproject_toml_file.metadata_project_urls_source == 'https://github.com/willynilly/somewhereuncool'
+
+    dummy_cff_and_pyproject_toml_file_synchronizer.set_code_repository_url(
+        'https://github.com/willynilly/somewherecooler')
+
+    # should change internal representation
+    assert cff_file.metadata_repository_code == 'https://github.com/willynilly/somewherecooler'
+    assert pyproject_toml_file.metadata_project_urls_source == 'https://github.com/willynilly/somewherecooler'
+
+    check_cff_file: CffFile = CffFile(file_path=cff_file.file_path)
+    check_pyproject_toml_file: PyprojectTomlFile = PyprojectTomlFile(
+        file_path=pyproject_toml_file.file_path)
+
+    # should not save
+    assert check_cff_file.metadata_repository_code == 'https://github.com/willynilly/somewherecool'
+    assert check_pyproject_toml_file.metadata_project_urls_source == 'https://github.com/willynilly/somewhereuncool'
 
 
-def test_set_license():
-    assert False
+def test_set_license(dummy_cff_and_pyproject_toml_file_synchronizer):
+    cff_file = dummy_cff_and_pyproject_toml_file_synchronizer.cff_file
+    pyproject_toml_file = dummy_cff_and_pyproject_toml_file_synchronizer.pyproject_toml_file
+
+    assert cff_file.metadata_license == 'Apache-2.0'
+    assert pyproject_toml_file.metadata_project_license == 'Apache-1.0'
+
+    dummy_cff_and_pyproject_toml_file_synchronizer.set_license('MIT')
+
+    # should change internal representation
+    assert cff_file.metadata_license == 'MIT'
+    assert pyproject_toml_file.metadata_project_license == 'MIT'
+
+    check_cff_file: CffFile = CffFile(file_path=cff_file.file_path)
+    check_pyproject_toml_file: PyprojectTomlFile = PyprojectTomlFile(
+        file_path=pyproject_toml_file.file_path)
+
+    # should not save
+    assert check_cff_file.metadata_license == 'Apache-2.0'
+    assert check_pyproject_toml_file.metadata_project_license == 'Apache-1.0'
 
 
-def test_set_title():
-    assert False
+def test_set_title(dummy_cff_and_pyproject_toml_file_synchronizer):
+    cff_file = dummy_cff_and_pyproject_toml_file_synchronizer.cff_file
+    pyproject_toml_file = dummy_cff_and_pyproject_toml_file_synchronizer.pyproject_toml_file
+
+    assert cff_file.metadata_title == 'somecooltool'
+    assert pyproject_toml_file.metadata_project_name == 'someuncooltool'
+
+    dummy_cff_and_pyproject_toml_file_synchronizer.set_title('somecoolertool')
+
+    # should change internal representation
+    assert cff_file.metadata_title == 'somecoolertool'
+    assert pyproject_toml_file.metadata_project_name == 'somecoolertool'
+
+    check_cff_file: CffFile = CffFile(file_path=cff_file.file_path)
+    check_pyproject_toml_file: PyprojectTomlFile = PyprojectTomlFile(
+        file_path=pyproject_toml_file.file_path)
+
+    # should not save
+    assert check_cff_file.metadata_title == 'somecooltool'
+    assert check_pyproject_toml_file.metadata_project_name == 'someuncooltool'
 
 
 def test_set_authors():
     assert False
-
-
-# def test_set_toml_with_cff(dummy_citation_cff_file_path, dummy_pyproject_toml_file_path):
-#     with TempCopiedFile(source_file_path=dummy_citation_cff_file_path) as tmp_dummy_citation_cff_file:
-#         with TempCopiedFile(source_file_path=dummy_pyproject_toml_file_path) as tmp_dummy_pyproject_toml_file:
-
-#             toml_object: TOMLObject = load_toml_object(
-#                 toml_file_path=tmp_dummy_pyproject_toml_file.file_path)
-#             assert toml_object['project']['version'] == '0.0.1'
-#             assert toml_object['project']['name'] == 'someuncooltool'
-#             assert toml_object['project']['description'] == 'A module that does something uncool.'
-#             assert toml_object['project']['license'] == 'Apache-1.0'
-#             assert toml_object['project']['urls']['Source'] == 'https://github.com/willynilly/somewhereuncool'
-
-#             def transformer(toml_object: TOMLObject, cff_object: CFFObject) -> TOMLObject:
-#                 toml_object['project']['version'] = '5.0.1'
-#                 toml_object['project']['name'] = 'cows'
-#                 toml_object['project']['description'] = 'A module that does something else.'
-#                 toml_object['project']['license'] = 'MIT'
-#                 toml_object['project']['urls']['Source'] = 'https://github.com/willynilly/somewhereelse'
-#                 return toml_object
-
-#             toml_object = set_toml_with_cff(
-#                 toml_file_path=tmp_dummy_pyproject_toml_file.file_path,
-#                 cff_file_path=tmp_dummy_citation_cff_file.file_path,
-#                 transform_toml_object_func=transformer)
-
-#             assert toml_object['project']['version'] == '5.0.1'
-#             assert toml_object['project']['name'] == 'cows'
-#             assert toml_object['project']['description'] == 'A module that does something else.'
-#             assert toml_object['project']['license'] == 'MIT'
-#             assert toml_object['project']['urls']['Source'] == 'https://github.com/willynilly/somewhereelse'
-
-#             toml_object = load_toml_object(
-#                 toml_file_path=tmp_dummy_pyproject_toml_file.file_path)
-#             assert toml_object['project']['version'] == '5.0.1'
-#             assert toml_object['project']['name'] == 'cows'
-#             assert toml_object['project']['description'] == 'A module that does something else.'
-#             assert toml_object['project']['license'] == 'MIT'
-#             assert toml_object['project']['urls']['Source'] == 'https://github.com/willynilly/somewhereelse'
-
-
-# def test_set_cff_with_toml(dummy_citation_cff_file_path, dummy_pyproject_toml_file_path):
-#     with TempCopiedFile(source_file_path=dummy_citation_cff_file_path) as tmp_dummy_citation_cff_file:
-#         with TempCopiedFile(source_file_path=dummy_pyproject_toml_file_path) as tmp_dummy_pyproject_toml_file:
-
-#             cff_object: CFFObject = load_cff_object(
-#                 cff_file_path=tmp_dummy_citation_cff_file.file_path)
-#             assert cff_object['version'] == '0.0.2'
-#             assert cff_object['title'] == 'somecooltool'
-#             assert cff_object['license'] == 'Apache-2.0'
-#             assert cff_object['abstract'] == 'A module that does something cool.'
-#             assert cff_object['repository-code'] == 'https://github.com/willynilly/somewherecool'
-
-#             def transformer(cff_object: CFFObject, toml_object: TOMLObject) -> CFFObject:
-#                 cff_object['version'] = '4.0.0'
-#                 cff_object['title'] = 'sheep'
-#                 cff_object['license'] = 'MIT'
-#                 cff_object['abstract'] = 'A module that does something else.'
-#                 cff_object['repository-code'] = 'https://github.com/willynilly/somewhereelse'
-
-#                 return cff_object
-
-#             cff_object = set_cff_with_toml(
-#                 cff_file_path=tmp_dummy_citation_cff_file.file_path,
-#                 toml_file_path=tmp_dummy_pyproject_toml_file.file_path,
-#                 transform_cff_object_func=transformer)
-
-#             assert cff_object['version'] == '4.0.0'
-#             assert cff_object['title'] == 'sheep'
-#             assert cff_object['license'] == 'MIT'
-#             assert cff_object['abstract'] == 'A module that does something else.'
-#             assert cff_object['repository-code'] == 'https://github.com/willynilly/somewhereelse'
-
-#             cff_object = load_cff_object(
-#                 cff_file_path=tmp_dummy_citation_cff_file.file_path)
-#             assert cff_object['version'] == '4.0.0'
-#             assert cff_object['title'] == 'sheep'
-#             assert cff_object['license'] == 'MIT'
-#             assert cff_object['abstract'] == 'A module that does something else.'
-#             assert cff_object['repository-code'] == 'https://github.com/willynilly/somewhereelse'
-
-
-# def test_set_pyproject_toml_with_citation_cff(dummy_citation_cff_file_path, dummy_pyproject_toml_file_path):
-#     with TempCopiedFile(source_file_path=dummy_citation_cff_file_path) as tmp_dummy_citation_cff_file:
-#         with TempCopiedFile(source_file_path=dummy_pyproject_toml_file_path) as tmp_dummy_pyproject_toml_file:
-
-#             toml_object: TOMLObject = load_toml_object(
-#                 toml_file_path=tmp_dummy_pyproject_toml_file.file_path)
-#             assert toml_object['project']['version'] == '0.0.1'
-#             assert toml_object['project']['name'] == 'someuncooltool'
-#             assert toml_object['project']['description'] == 'A module that does something uncool.'
-#             assert toml_object['project']['license'] == 'Apache-1.0'
-#             assert toml_object['project']['urls']['Source'] == 'https://github.com/willynilly/somewhereuncool'
-
-#             toml_object = set_pyproject_toml_with_citation_cff(
-#                 pyproject_toml_file_path=tmp_dummy_pyproject_toml_file.file_path,
-#                 citation_cff_file_path=tmp_dummy_citation_cff_file.file_path)
-
-#             assert toml_object['project']['version'] == '0.0.2'
-#             assert toml_object['project']['name'] == 'somecooltool'
-#             assert toml_object['project']['description'] == 'A module that does something cool.'
-#             assert toml_object['project']['license'] == 'Apache-2.0'
-#             assert toml_object['project']['urls']['Source'] == 'https://github.com/willynilly/somewherecool'
-
-#             toml_object = load_toml_object(
-#                 toml_file_path=tmp_dummy_pyproject_toml_file.file_path)
-#             assert toml_object['project']['version'] == '0.0.2'
-#             assert toml_object['project']['name'] == 'somecooltool'
-#             assert toml_object['project']['description'] == 'A module that does something cool.'
-#             assert toml_object['project']['license'] == 'Apache-2.0'
-#             assert toml_object['project']['urls']['Source'] == 'https://github.com/willynilly/somewherecool'
-
-
-# def test_set_citation_cff_with_pyproject_toml(dummy_citation_cff_file_path, dummy_pyproject_toml_file_path):
-#     with TempCopiedFile(source_file_path=dummy_citation_cff_file_path) as tmp_dummy_citation_cff_file:
-#         with TempCopiedFile(source_file_path=dummy_pyproject_toml_file_path) as tmp_dummy_pyproject_toml_file:
-
-#             cff_object: CFFObject = load_cff_object(
-#                 cff_file_path=tmp_dummy_citation_cff_file.file_path)
-#             assert cff_object['version'] == '0.0.2'
-#             assert cff_object['title'] == 'somecooltool'
-#             assert cff_object['license'] == 'Apache-2.0'
-#             assert cff_object['abstract'] == 'A module that does something cool.'
-#             assert cff_object['repository-code'] == 'https://github.com/willynilly/somewherecool'
-
-#             cff_object = set_citation_cff_with_pyproject_toml(
-#                 citation_cff_file_path=tmp_dummy_citation_cff_file.file_path,
-#                 pyproject_toml_file_path=tmp_dummy_pyproject_toml_file.file_path)
-
-#             assert cff_object['version'] == '0.0.1'
-#             assert cff_object['title'] == 'someuncooltool'
-#             assert cff_object['license'] == 'Apache-1.0'
-#             assert cff_object['abstract'] == 'A module that does something uncool.'
-#             assert cff_object['repository-code'] == 'https://github.com/willynilly/somewhereuncool'
-
-#             cff_object = load_cff_object(
-#                 cff_file_path=tmp_dummy_citation_cff_file.file_path)
-#             assert cff_object['version'] == '0.0.1'
-#             assert cff_object['title'] == 'someuncooltool'
-#             assert cff_object['license'] == 'Apache-1.0'
-#             assert cff_object['abstract'] == 'A module that does something uncool.'
-#             assert cff_object['repository-code'] == 'https://github.com/willynilly/somewhereuncool'
-
-
-# def test_set_version_for_citation_cff_and_pyproject_toml(dummy_citation_cff_file_path, dummy_pyproject_toml_file_path):
-#     expected_version: str = '10.1.1'
-#     with TempCopiedFile(source_file_path=dummy_citation_cff_file_path) as tmp_dummy_citation_cff_file:
-#         with TempCopiedFile(source_file_path=dummy_pyproject_toml_file_path) as tmp_dummy_pyproject_toml_file:
-
-#             toml_object: TOMLObject = load_toml_object(
-#                 toml_file_path=tmp_dummy_pyproject_toml_file.file_path)
-#             assert toml_object['project']['version'] == '0.0.1'
-#             assert toml_object['project']['name'] == 'someuncooltool'
-#             assert toml_object['project']['description'] == 'A module that does something uncool.'
-#             assert toml_object['project']['license'] == 'Apache-1.0'
-#             assert toml_object['project']['urls']['Source'] == 'https://github.com/willynilly/somewhereuncool'
-
-#             cff_object: CFFObject = load_cff_object(
-#                 cff_file_path=tmp_dummy_citation_cff_file.file_path)
-#             assert cff_object['version'] == '0.0.2'
-#             assert cff_object['title'] == 'somecooltool'
-#             assert cff_object['license'] == 'Apache-2.0'
-#             assert cff_object['abstract'] == 'A module that does something cool.'
-#             assert cff_object['repository-code'] == 'https://github.com/willynilly/somewherecool'
-
-#             cff_object, toml_object = set_version_for_citation_cff_and_pyproject_toml(
-#                 version=expected_version,
-#                 citation_cff_file_path=tmp_dummy_citation_cff_file.file_path,
-#                 pyproject_toml_file_path=tmp_dummy_pyproject_toml_file.file_path)
-
-#             assert toml_object['project']['version'] == expected_version
-#             assert toml_object['project']['name'] == 'someuncooltool'
-#             assert toml_object['project']['description'] == 'A module that does something uncool.'
-#             assert toml_object['project']['license'] == 'Apache-1.0'
-#             assert toml_object['project']['urls']['Source'] == 'https://github.com/willynilly/somewhereuncool'
-
-#             assert cff_object['version'] == expected_version
-#             assert cff_object['title'] == 'somecooltool'
-#             assert cff_object['license'] == 'Apache-2.0'
-#             assert cff_object['abstract'] == 'A module that does something cool.'
-#             assert cff_object['repository-code'] == 'https://github.com/willynilly/somewherecool'
-
-#             toml_object = load_toml_object(
-#                 toml_file_path=tmp_dummy_pyproject_toml_file.file_path)
-#             assert toml_object['project']['version'] == expected_version
-#             assert toml_object['project']['name'] == 'someuncooltool'
-#             assert toml_object['project']['description'] == 'A module that does something uncool.'
-#             assert toml_object['project']['license'] == 'Apache-1.0'
-#             assert toml_object['project']['urls']['Source'] == 'https://github.com/willynilly/somewhereuncool'
-
-#             cff_object = load_cff_object(
-#                 cff_file_path=tmp_dummy_citation_cff_file.file_path)
-#             assert cff_object['version'] == expected_version
-#             assert cff_object['title'] == 'somecooltool'
-#             assert cff_object['license'] == 'Apache-2.0'
-#             assert cff_object['abstract'] == 'A module that does something cool.'
-#             assert cff_object['repository-code'] == 'https://github.com/willynilly/somewherecool'

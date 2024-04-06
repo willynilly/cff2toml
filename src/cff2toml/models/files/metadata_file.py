@@ -1,33 +1,26 @@
-from typing import Any, Dict, Mapping, Union
+from typing import Any
 
-import pydash
+from pydantic import BaseModel
 
-Metadata = Mapping[str, Any]
+from cff2toml.models.metadata import Metadata
 
 DEFAULT_DIR: str = '.'
 
 
-class MetadataFile:
+class MetadataFile(BaseModel):
 
-    _metadata: Metadata = {}
+    _metadata: Metadata = Metadata()
     file_path: str = ''
 
     def get_metadata(self, property_path: str) -> Any:
-        return pydash.objects.get(
-            obj=self._metadata, path=property_path)
+        return self._metadata.get(property_path=property_path)
 
     def set_metadata(self, property_path: str, value: Any) -> None:
-        self._metadata = pydash.objects.set_(
-            obj=self._metadata, path=property_path, value=value)
+        self._metadata.set(property_path=property_path, value=value)
 
     def delete_metadata(self, property_path: str) -> None:
         if self._metadata is not None:
-            data_as_dict: Dict = dict(self._metadata)
-            pydash.objects.unset(obj=data_as_dict, path=property_path)
-            self._metadata = data_as_dict
+            self._metadata.delete(property_path=property_path)
 
     def has_metadata(self, property_path: str) -> bool:
-        if self._metadata is None:
-            return False
-        else:
-            return pydash.objects.has(self._metadata, path=property_path)
+        return self._metadata.has(property_path=property_path)
