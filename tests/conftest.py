@@ -1,7 +1,8 @@
 import pytest
 import os
 
-from cff2toml.models.agents.authors.cff_author import CffAuthor
+from cff2toml.models.agents.authors.cff_entity_author import CffEntityAuthor
+from cff2toml.models.agents.authors.cff_person_author import CffPersonAuthor
 from cff2toml.models.agents.authors.pyproject_toml_author import PyprojectTomlAuthor
 from cff2toml.models.files.cff_file import CffFile
 from cff2toml.models.files.pyproject_toml_file import PyprojectTomlFile
@@ -49,25 +50,23 @@ def dummy_cff_and_pyproject_toml_file_synchronizer(dummy_cff_file, dummy_pyproje
 
 @pytest.fixture
 def dummy_cff_author_person():
-    author = CffAuthor()
-    author.is_person = True
-    author.person.given_names = 'Billy Bob'
-    author.person.family_names = 'Longshot'
-    author.person.name_particle = 'de'
-    author.person.name_suffix = 'VIII'
-    author.person.email = 'longshot@somewherecool.nl'
-    author.person.orcid = 'someorcidid'
-    author.person.affiliation = 'Cool University'
+    author = CffPersonAuthor()
+    author.given_names = 'Billy Bob'
+    author.family_names = 'Longshot'
+    author.name_particle = 'de'
+    author.name_suffix = 'VIII'
+    author.email = 'longshot@somewherecool.nl'
+    author.orcid = 'someorcidid'
+    author.affiliation = 'Cool University'
     return author
 
 
 @pytest.fixture
-def dummy_cff_author_organization():
-    author = CffAuthor()
-    author.is_person = False
-    author.entity.name = 'Cool Company'
-    author.entity.email = 'coolcompany@somewherecool.nl'
-    author.entity.orcid = 'coolcompanyorcid'
+def dummy_cff_author_entity():
+    author = CffEntityAuthor()
+    author.name = 'Cool Company'
+    author.email = 'coolcompany@somewherecool.nl'
+    author.orcid = 'coolcompanyorcid'
     return author
 
 

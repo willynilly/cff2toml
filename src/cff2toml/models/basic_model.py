@@ -22,7 +22,7 @@ class BasicModel(BaseModel):
 
     model_config = ConfigDict(
         alias_generator=AliasGenerator(
-            validation_alias=to_snake,
+            validation_alias=to_kebab,
             serialization_alias=to_kebab,
         )
     )

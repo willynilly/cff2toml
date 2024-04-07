@@ -1,4 +1,6 @@
 import os
+from typing import List
+from cff2toml.models.agents.authors.pyproject_toml_author import PyprojectTomlAuthor
 from cff2toml.models.files.metadata_file import DEFAULT_DIR
 from cff2toml.models.files.toml_file import TomlFile
 
@@ -31,8 +33,14 @@ class PyprojectTomlFile(TomlFile):
 
     @property
     def metadata_project_authors(self):
-        return self.get_metadata("project.authors")
+        return self.get_metadata("project.authors", default_value=[])
 
     @property
     def metadata_project_urls_source(self):
         return self.get_metadata("project.urls.Source")
+
+    @property
+    def authors(self) -> List[PyprojectTomlAuthor]:
+        pyproject_toml_authors: List[PyprojectTomlAuthor] = [PyprojectTomlAuthor.model_validate(
+            author_metadata) for author_metadata in self.metadata_project_authors]
+        return pyproject_toml_authors

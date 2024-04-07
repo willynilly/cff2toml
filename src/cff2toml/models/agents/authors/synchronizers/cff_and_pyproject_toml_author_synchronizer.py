@@ -1,13 +1,15 @@
 from typing import Any, Dict, Union
 
-from cff2toml.models.agents.authors.cff_author import CffAuthor
+from cff2toml.models.agents.authors.cff_entity_author import CffEntityAuthor
+from cff2toml.models.agents.authors.cff_person_author import CffPersonAuthor
 from cff2toml.models.agents.authors.pyproject_toml_author import PyprojectTomlAuthor
 from cff2toml.models.agents.people.human_name import HumanName
+from cff2toml.models.files.cff_file import CffAuthor
 
 CffAuthorData = Dict[str, Any]
 PyprojectTomlAuthorData = Dict[str, Any]
 
-Author = Union[CffAuthor, PyprojectTomlAuthor]
+Author = Union[CffPersonAuthor, CffEntityAuthor, PyprojectTomlAuthor]
 
 
 class CffAndPyprojectTomlAuthorSynchronizer():
@@ -15,49 +17,50 @@ class CffAndPyprojectTomlAuthorSynchronizer():
     # https://github.com/citation-file-format/citation-file-format/blob/main/schema-guide.md#how-to-deal-with-unknown-individual-authors
     @staticmethod
     def to_valid_cff_author(author: Author) -> CffAuthor:
-        if isinstance(author, CffAuthor):
+        if isinstance(author, CffPersonAuthor) or isinstance(author, CffEntityAuthor):
             author = author.model_copy(deep=True)
-            if author.is_person:
-                if not author.person.given_names and not author.person.family_names:
-                    author.is_person = False
-                    author.entity.name = "anonymous"
-                    author.entity.email = author.person.email
-                    author.entity.orcid = author.person.orcid
-                    author.entity.address = author.person.address
-                    author.entity.city = author.person.city
-                    author.entity.alias = author.person.alias
-                    author.entity.country = author.person.country
-                    author.entity.fax = author.person.fax
-                    author.entity.post_code = author.person.post_code
-                    author.entity.region = author.person.region
-                    author.entity.tel = author.person.tel
-                    author.entity.website = author.person.website
+            if isinstance(author, CffPersonAuthor) and not author.given_names and not author.family_names:
+                # the cff person author has been changed to an anonymous entity author
+                entity_author: CffEntityAuthor = CffEntityAuthor()
+                entity_author.name = "anonymous"
+                entity_author.email = author.email
+                entity_author.orcid = author.orcid
+                entity_author.address = author.address
+                entity_author.city = author.city
+                entity_author.alias = author.alias
+                entity_author.country = author.country
+                entity_author.fax = author.fax
+                entity_author.post_code = author.post_code
+                entity_author.region = author.region
+                entity_author.tel = author.tel
+                entity_author.website = author.website
+                author = entity_author
             return author
         elif isinstance(author, PyprojectTomlAuthor):
             name: HumanName = HumanName()
             name.full_name = author.name
 
-            cff_author: CffAuthor = CffAuthor()
+            cff_author: CffAuthor
             if not name.first_name and not name.last_name:
-                cff_author.is_person = False
-                cff_author.entity.name = "anonymous"
+                cff_author = CffEntityAuthor()
+                cff_author.name = "anonymous"
                 if author.email:
-                    cff_author.entity.email = author.email
+                    cff_author.email = author.email
             else:
-                cff_author.is_person = True
+                cff_author = CffPersonAuthor()
                 if name.first_name:
                     if name.middle_name:
-                        cff_author.person.given_names = name.first_name + ' ' + name.middle_name
+                        cff_author.given_names = name.first_name + ' ' + name.middle_name
                     else:
-                        cff_author.person.given_names = name.first_name
+                        cff_author.given_names = name.first_name
                 if name.particle:
-                    cff_author.person.name_particle = name.particle
+                    cff_author.name_particle = name.particle
                 if name.last_name:
-                    cff_author.person.family_names = name.last_name
+                    cff_author.family_names = name.last_name
                 if name.suffix:
-                    cff_author.person.name_suffix = name.suffix
+                    cff_author.name_suffix = name.suffix
                 if author.email:
-                    cff_author.person.email = author.email
+                    cff_author.email = author.email
 
             return cff_author
         else:
@@ -68,11 +71,8 @@ class CffAndPyprojectTomlAuthorSynchronizer():
     def to_cff_author_data(author: Author) -> CffAuthorData:
         author = CffAndPyprojectTomlAuthorSynchronizer.to_valid_cff_author(
             author)
-        if isinstance(author, CffAuthor):
-            if author.is_person:
-                return author.person.model_dump(mode="json", exclude_defaults=True, by_alias=True)
-            else:
-                return author.entity.model_dump(mode="json", exclude_defaults=True, by_alias=True)
+        if isinstance(author, CffPersonAuthor) or isinstance(author, CffEntityAuthor):
+            return author.model_dump(mode="json", exclude_defaults=True, by_alias=True)
         else:
             raise TypeError(
                 "Cannot convert to CFF author data. Should be an instance of CffAuthor or PyprojcetTomlAuthor.")
@@ -81,14 +81,17 @@ class CffAndPyprojectTomlAuthorSynchronizer():
     def to_valid_pyproject_toml_author(author: Author) -> PyprojectTomlAuthor:
         if isinstance(author, PyprojectTomlAuthor):
             return author
-        elif isinstance(author, CffAuthor):
+        elif isinstance(author, CffPersonAuthor) or isinstance(author, CffEntityAuthor):
             pyproject_toml_author: PyprojectTomlAuthor = PyprojectTomlAuthor()
-            if author.is_person:
+            if isinstance(author, CffPersonAuthor):
                 pyproject_toml_author.name = ' '.join(
-                    [author.person.given_names, author.person.name_particle, author.person.family_names, author.person.name_suffix])
-                pyproject_toml_author.email = author.person.email
+                    [author.given_names, author.name_particle, author.family_names, author.name_suffix])
+                pyproject_toml_author.email = author.email
+            elif isinstance(author, CffEntityAuthor):
+                pyproject_toml_author.name = author.name
             else:
-                pyproject_toml_author.name = author.entity.name
+                raise TypeError(
+                    "Cannot convert to PyprojectToml author. Should be an instance of CffAuthor or PyprojcetTomlAuthor.")
             return pyproject_toml_author
         else:
             raise TypeError(
@@ -96,7 +99,7 @@ class CffAndPyprojectTomlAuthorSynchronizer():
 
     @staticmethod
     def to_pyproject_toml_author_data(author: Author) -> PyprojectTomlAuthorData:
-        if isinstance(author, CffAuthor):
+        if isinstance(author, CffPersonAuthor) or isinstance(author, CffEntityAuthor):
             author = CffAndPyprojectTomlAuthorSynchronizer.to_valid_pyproject_toml_author(
                 author)
         if isinstance(author, PyprojectTomlAuthor):

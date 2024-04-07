@@ -33,7 +33,10 @@ classifiers = [
     "Topic :: Software Development",
     "Topic :: Utilities"
 ]
-dependencies = ["toml>=0.10.2", "PyYAML>=6.0.1", "pydash>=8.0.0", "pydantic>=2.6.4"]
+dependencies = ["toml>=0.10.2", "PyYAML>=6.0.1", "pydash>=8.0.0", "pydantic>=2.6.4", "typer>=0.12.1"]
+
+[project.scripts]
+cff2toml = "cff2toml.main:start"
 
 [project.urls]
 Documentation = "https://github.com/willynilly/cff2toml#readme"
@@ -49,3 +52,7 @@ testing = [
 pythonpath = [
   "src"
 ]
+
+[tool.hatch.build.targets.sdist.force-include]
+"CITATION.cff" = "src/cff2toml/CITATION.cff"
+

@@ -11,7 +11,8 @@ requires-python = ">=3.8"
 license = "Apache-1.0"
 keywords = []
 authors = [
-  { name = "Will Riley", email = "wanderingwill@gmail.com" },
+  { name = "Will Riley", email = "test1@willriley.net" },
+  { name = "Willy Riley", email = "test2@willriley.net" }
 ]
 classifiers = [
   "Programming Language :: Python",

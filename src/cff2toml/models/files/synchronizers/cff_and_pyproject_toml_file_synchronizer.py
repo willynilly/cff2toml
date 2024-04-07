@@ -1,6 +1,7 @@
 from typing import Any, Dict, List, Tuple, Union
+from cff2toml.models.agents.authors.pyproject_toml_author import PyprojectTomlAuthor
 from cff2toml.models.agents.authors.synchronizers.cff_and_pyproject_toml_author_synchronizer import Author, CffAndPyprojectTomlAuthorSynchronizer, CffAuthorData, PyprojectTomlAuthorData
-from cff2toml.models.files.cff_file import CffFile
+from cff2toml.models.files.cff_file import CffAuthor, CffFile
 from cff2toml.models.files.pyproject_toml_file import PyprojectTomlFile
 
 # {common property name} -> (pyproject.toml property path}, {cff property path})
@@ -49,7 +50,17 @@ class CffAndPyprojectTomlFileSynchronizer:
                         property_path=cff_property_path)
 
     def _update_cff_with_pyproject_toml_authors(self, delete_missing_metadata: bool = True):
-        raise NotImplementedError
+        pyproject_toml_authors: List[PyprojectTomlAuthor] = self.pyproject_toml_file.authors
+
+        # copy the list so it passes the type checker
+        authors: List[Author] = list(pyproject_toml_authors)
+
+        # set both files' authors since the the CFF file's author objects may be invalid an they may also need to be updated
+        # but only remove the authors section in the
+        # cff file if there are no authors in the pyproject toml file
+        # and if the delete missing metadata flag is set to true
+        if len(authors) or delete_missing_metadata:
+            self.set_authors(authors=authors)
 
     def update_pyproject_toml_with_cff(self, delete_missing_metadata: bool = True) -> None:
         for common_property_name, (pyproject_toml_property_path, cff_property_path) in PROPERTY_MAPPINGS.items():
@@ -69,7 +80,18 @@ class CffAndPyprojectTomlFileSynchronizer:
                         property_path=pyproject_toml_property_path)
 
     def _update_pyproject_toml_with_cff_authors(self, delete_missing_metadata: bool = True):
-        raise NotImplementedError
+        cff_authors: List[CffAuthor] = self.cff_file.authors
+
+        # copy the list so it passes the type checker
+        authors: List[Author] = list(cff_authors)
+
+        # set both files' authors since the the pyproject toml file's author objects
+        # may be invalid an they may also need to be updated
+        # but only remove the authors section in the
+        # pyproject toml file if there are no authors in the cff file
+        # and if the delete missing metadata flag is set to true
+        if len(authors) or delete_missing_metadata:
+            self.set_authors(authors=authors)
 
     def _set_common_property(self, common_property_name: str, value: Any):
         if common_property_name in PROPERTY_MAPPINGS:
@@ -102,14 +124,18 @@ class CffAndPyprojectTomlFileSynchronizer:
             common_property_name="license", value=license)
 
     def set_authors(self, authors: List[Author]):
-        author_data_for_cff: list[CffAuthorData] = [
-            CffAndPyprojectTomlAuthorSynchronizer.to_cff_author_data(author=author) for author in authors]
-        author_data_for_pyproject_toml: list[PyprojectTomlAuthorData] = [
-            CffAndPyprojectTomlAuthorSynchronizer.to_pyproject_toml_author_data(author=author) for author in authors]
+        if len(authors):
+            author_data_for_cff: list[CffAuthorData] = [
+                CffAndPyprojectTomlAuthorSynchronizer.to_cff_author_data(author=author) for author in authors]
+            author_data_for_pyproject_toml: list[PyprojectTomlAuthorData] = [
+                CffAndPyprojectTomlAuthorSynchronizer.to_pyproject_toml_author_data(author=author) for author in authors]
 
-        self.cff_file.set_metadata("authors", author_data_for_cff)
-        self.pyproject_toml_file.set_metadata(
-            "project.authors", author_data_for_pyproject_toml)
+            self.cff_file.set_metadata("authors", author_data_for_cff)
+            self.pyproject_toml_file.set_metadata(
+                "project.authors", author_data_for_pyproject_toml)
+        else:
+            self.cff_file.delete_metadata("authors")
+            self.pyproject_toml_file.delete_metadata("project.authors")
 
     def save(self):
         self.cff_file.save()

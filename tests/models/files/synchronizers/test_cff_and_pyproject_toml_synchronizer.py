@@ -1,7 +1,9 @@
-from cff2toml.models.files.cff_file import CffFile
+from typing import List
+from cff2toml.models.agents.authors.cff_person_author import CffPersonAuthor
+from cff2toml.models.agents.authors.pyproject_toml_author import PyprojectTomlAuthor
+from cff2toml.models.files.cff_file import CffAuthor, CffFile
 from cff2toml.models.files.pyproject_toml_file import PyprojectTomlFile
 from cff2toml.models.files.synchronizers.cff_and_pyproject_toml_file_synchronizer import CffAndPyprojectTomlFileSynchronizer
-from tests.temp_copied_file import TempCopiedFile
 
 
 def test_update_cff_with_pyproject_toml_only_deletes_metadata_for_mapped_properties_missing_in_pyproject_toml(dummy_cff_and_pyproject_toml_file_synchronizer):
@@ -209,5 +211,42 @@ def test_set_title(dummy_cff_and_pyproject_toml_file_synchronizer):
     assert check_pyproject_toml_file.metadata_project_name == 'someuncooltool'
 
 
-def test_set_authors():
-    assert False
+def test_set_authors_with_only_cff_person_authors(dummy_cff_and_pyproject_toml_file_synchronizer):
+    synchronizer: CffAndPyprojectTomlFileSynchronizer = dummy_cff_and_pyproject_toml_file_synchronizer
+    cff_file = synchronizer.cff_file
+    pyproject_toml_file = synchronizer.pyproject_toml_file
+
+    cff_authors: List[CffAuthor] = cff_file.authors
+    assert len(cff_authors) == 2
+    assert isinstance(cff_authors[0], CffPersonAuthor)
+    assert isinstance(cff_authors[1], CffPersonAuthor)
+
+    cff_person_authors: List[CffPersonAuthor] = [
+        cff_author for cff_author in cff_authors if isinstance(cff_author, CffPersonAuthor)]
+    cff_author_0: CffPersonAuthor = cff_person_authors[0]
+    cff_author_1: CffPersonAuthor = cff_person_authors[1]
+
+    assert cff_author_0.given_names == 'Somefirstname1'
+    assert cff_author_1.given_names == 'Somefirstname2'
+    assert cff_author_0.family_names == 'Somelastname1'
+    assert cff_author_1.family_names == 'Somelastname2'
+    assert cff_author_0.name_particle == 'van'
+    assert cff_author_1.name_particle == 'von'
+    assert cff_author_0.name_suffix == 'I'
+    assert cff_author_1.name_suffix == 'II'
+    assert cff_author_0.orcid == 'https://fakeorcid.org/0000-0000-0000-0001'
+    assert cff_author_1.orcid == 'https://fakeorcid.org/0000-0000-0000-0002'
+    assert cff_author_0.affiliation == 'Some University 1'
+    assert cff_author_1.affiliation == 'Some University 2'
+    assert cff_author_0.email == 'someone1@somedomain.com'
+    assert cff_author_1.email == 'someone2@somedomain.com'
+
+    pyproject_toml_authors: List[PyprojectTomlAuthor] = pyproject_toml_file.authors
+
+    assert len(pyproject_toml_authors) == 2
+    assert isinstance(pyproject_toml_authors[0], PyprojectTomlAuthor)
+    assert isinstance(pyproject_toml_authors[1], PyprojectTomlAuthor)
+    assert pyproject_toml_authors[0].name == 'Will Riley'
+    assert pyproject_toml_authors[1].name == 'Willy Riley'
+    assert pyproject_toml_authors[0].email == 'test1@willriley.net'
+    assert pyproject_toml_authors[1].email == 'test2@willriley.net'

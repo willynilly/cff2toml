@@ -12,8 +12,8 @@ class MetadataFile(BaseModel):
     _metadata: Metadata = Metadata()
     file_path: str = ''
 
-    def get_metadata(self, property_path: str) -> Any:
-        return self._metadata.get(property_path=property_path)
+    def get_metadata(self, property_path: str, default_value: Any = None) -> Any:
+        return self._metadata.get(property_path=property_path, default_value=default_value)
 
     def set_metadata(self, property_path: str, value: Any) -> None:
         self._metadata.set(property_path=property_path, value=value)

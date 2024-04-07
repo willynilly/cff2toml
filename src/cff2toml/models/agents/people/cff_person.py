@@ -21,3 +21,6 @@ class CffPerson(BasicModel):
     region: str = ''
     tel: str = ''
     website: str = ''
+
+    def format_full_name(self):
+        return ' '.join([n for n in [self.given_names, self.name_particle, self.family_names, self.name_suffix] if n.strip() != ''])

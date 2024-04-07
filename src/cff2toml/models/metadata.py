@@ -12,9 +12,9 @@ class Metadata(BaseModel):
     def to_dict(self) -> Dict[str, Any]:
         return self._metadata.copy()
 
-    def get(self, property_path: str) -> Any:
+    def get(self, property_path: str, default_value: Any = None) -> Any:
         return pydash.objects.get(
-            obj=self._metadata, path=property_path)
+            obj=self._metadata, path=property_path, default=default_value)
 
     def set(self, property_path: str, value: Any) -> None:
         self._metadata = pydash.objects.set_(

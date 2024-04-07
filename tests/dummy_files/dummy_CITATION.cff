@@ -5,14 +5,22 @@ message: >-
   metadata from this file.
 type: software
 authors:
-  - given-names: Somefirstname
-    name-particle: Somemiddlename
-    family-names: Somelastname
-    name-suffix: IX
-    email: somewhere@somedomain.com
+  - given-names: Somefirstname1
+    name-particle: van
+    family-names: Somelastname1
+    name-suffix: I
+    email: someone1@somedomain.com
     affiliation: >-
-      Some University
-    orcid: "https://orcid.org/0000-0003-1822-6756"
+      Some University 1
+    orcid: "https://fakeorcid.org/0000-0000-0000-0001"
+  - given-names: Somefirstname2
+    name-particle: von
+    family-names: Somelastname2
+    name-suffix: II
+    email: someone2@somedomain.com
+    affiliation: >-
+      Some University 2
+    orcid: "https://fakeorcid.org/0000-0000-0000-0002"
 repository-code: >-
   https://github.com/willynilly/somewherecool
 abstract: >-
