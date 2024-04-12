@@ -33,14 +33,14 @@ One common use case is to synchronize metadata between pyproject.toml and CITATI
 
 ### Viewing metadata in CITATION.cff and pyproject.toml
 
-Here is how you change the version in both CITATION.cff and pyproject.toml,
+Here is how you view the version in both CITATION.cff and pyproject.toml,
 assuming they are in the same directory
 
 ```
 cff2toml view version
 ```
 
-You can also change other common metadata. See the help.
+You can also view other common metadata. See the help.
 
 ### Changing metadata in both CITATION.cff and pyproject.toml
 
