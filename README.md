@@ -23,15 +23,27 @@ pip install cff2toml
 
 ## Usage
 
+This package offers a CLI and classes to manipulate metadata in CFF and TOML files.
+
+One common use case is to synchronize metadata between pyproject.toml and CITATION.cff files in a Python software project.
+
+### CLI
+
+The CLI allows you to view and change common metadata between CITATION.cff and pyproject.toml files, including the Python project's:
+
+- title
+- description
+- license
+- version
+- repo
+
+You can learn more about the CLI options and commands by running the following help option:
+
 ```console
 cff2toml --help
 ```
 
-This package offers a CLI and classes to manipulate metadata in CFF and TOML files.
-
-One common use case is to synchronize metadata between pyproject.toml and CITATION.cff files in a Python project.
-
-### Viewing metadata in CITATION.cff and pyproject.toml
+#### Viewing metadata in CITATION.cff and pyproject.toml
 
 Here is how you view the version in both CITATION.cff and pyproject.toml,
 assuming they are in the same directory
@@ -42,7 +54,7 @@ cff2toml view version
 
 You can also view other common metadata. See the help.
 
-### Changing metadata in both CITATION.cff and pyproject.toml
+#### Changing metadata in both CITATION.cff and pyproject.toml
 
 Here is how you change the version in both CITATION.cff and pyproject.toml,
 assuming they are in the same directory
@@ -55,7 +67,7 @@ You can also change other common metadata. See the help.
 
 ## Limitations
 
-The tool is in early and active development, so it should not be used yet for production systems. The CLI only supports version and license at the moment, but the underlying libraries support more.
+The CLI and its underlying classes are in early and active development, so they should not be used yet for production systems. The classed used by the CLI may have more functionality than what is currently exposed through the CLI.
 
 ## Roadmap
 
