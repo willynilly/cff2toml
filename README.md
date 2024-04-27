@@ -66,3 +66,22 @@ The tool is in early and active development, so it should not be used yet for pr
 ## License
 
 `cff2toml` is distributed under the terms of the [Apache 2.0](https://spdx.org/licenses/Apache-2.0.html) license
+
+## Contribution
+
+Contributions in the form of feature requests, bug reports, bug fixes, tests, and feature implementations are welcome. To contribute code, please fork the project, and then do a pull request.
+
+### Developer Notes
+
+#### Buildiing Locally
+
+To build the tool locally, please follow the general advice from [here](https://packaging.python.org/en/latest/tutorials/packaging-projects/).
+
+```
+python3 -m pip install --upgrade build
+python3 -m build
+```
+
+#### Deploying
+
+To deploy the tool, use the Github Action defined in .github/workflows/python-publish.yml

@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, List
 
 from pydantic import BaseModel
 
@@ -24,3 +24,7 @@ class MetadataFile(BaseModel):
 
     def has_metadata(self, property_path: str) -> bool:
         return self._metadata.has(property_path=property_path)
+
+    @property
+    def metadata(self) -> Metadata:
+        return self._metadata

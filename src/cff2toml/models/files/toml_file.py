@@ -1,6 +1,6 @@
-from typing import Union
-import toml
+from typing import OrderedDict, Union
 from cff2toml.models.files.metadata_file import MetadataFile
+import tomlkit
 
 
 class LoadTomlFileException(Exception):
@@ -18,7 +18,8 @@ class TomlFile(MetadataFile):
         self.file_path = file_path
         try:
             with open(self.file_path, 'r') as toml_file:
-                self._metadata.from_dict(toml.load(toml_file))
+                self._metadata.from_dict(
+                    OrderedDict(tomlkit.load(toml_file).value))
         except:
             raise LoadTomlFileException(
                 f"Cannot load this TOML file: {self.file_path}")
@@ -29,7 +30,8 @@ class TomlFile(MetadataFile):
         if self._metadata is not None:
             try:
                 with open(file_path, 'w') as toml_file:
-                    toml.dump(self._metadata.to_dict(), toml_file)
+                    tomlkit.dump(OrderedDict(self._metadata.to_dict()),
+                                 toml_file)
             except:
                 raise SaveTomlFileException(
                     f"Cannot save this TOML file: {file_path}")

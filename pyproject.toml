@@ -33,7 +33,7 @@ classifiers = [
     "Topic :: Software Development",
     "Topic :: Utilities"
 ]
-dependencies = ["toml>=0.10.2", "PyYAML>=6.0.1", "pydash>=8.0.0", "pydantic>=2.6.4", "typer>=0.12.1"]
+dependencies = ["tomlkit>=0.12.4", "PyYAML>=6.0.1", "pydash>=8.0.0", "pydantic>=2.6.4", "typer>=0.12.1"]
 
 [project.scripts]
 cff2toml = "cff2toml.main:start"

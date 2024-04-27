@@ -39,7 +39,8 @@ class CffFile(MetadataFile):
         if self._metadata is not None:
             try:
                 with open(file_path, 'w') as cff_file:
-                    yaml.safe_dump(self._metadata.to_dict(), cff_file)
+                    yaml.safe_dump(self._metadata.to_dict(),
+                                   cff_file, sort_keys=False)
             except:
                 raise SaveCffFileException(
                     f"Cannot save this CFF file: {file_path}")

@@ -5,7 +5,8 @@ from cff2toml.models.files.metadata_file import MetadataFile
 @fixture
 def dummy_metadata_file():
     metadata_file = MetadataFile()
-    metadata_file._metadata.from_dict({'some': {'nestedproperty': 'somedata'}})
+    metadata_file._metadata.from_dict(
+        {'some': {'nestedproperty': 'somedata'}, 'other': 'otherdata'})
     return metadata_file
 
 
