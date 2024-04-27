@@ -61,7 +61,6 @@ The tool is in early and active development, so it should not be used yet for pr
 
 1. Improve CLI tool to view and change other metadata fields.
 2. Improve documentation of the underlying classes.
-3. Fix the output order so that it creates a more useful semantic ordering of propreties (not alphabetical).
 
 ## License
 
